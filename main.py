@@ -34,39 +34,31 @@ def create_order(e):
     if not prod1:
       return
 
-    subtotal = (
-        float(prod1.value) * prod1.checked
-        + float(prod2.value) * prod2.checked
-        + float(prod3.value) * prod3.checked
-        + float(prod4.value) * prod4.checked
-        + float(prod5.value) * prod5.checked
-    )
+    subtotal = 0.0
+    receipt = "<h4>==== Receipt ====</h4>"
+
+    # List of items with their names and fixed prices
+    items = [
+        (prod1, "League of Legends Funko pops", 450.0),
+        (prod2, "Gelato", 120.0),
+        (prod3, "Dark Souls 3 (Deluxe)", 2499.0),
+        (prod4, "Tiramisu (per slice)", 150.0),
+        (prod5, "Jojo's Bizarre Adventure Part 7 (Vol)", 250.0),
+    ]
+
+    selected_count = 0
+    for item, name, price in items:
+      if item.checked:
+        subtotal += price
+        receipt += f"<p>{name}  ₱{price:.2f}</p>"
+        selected_count += 1
+
+    if selected_count == 0:
+      receipt += "<p>No items selected.</p>"
 
     tax_rate = 0.12
     tax = subtotal * tax_rate
     total = subtotal + tax
-
-    receipt = "<h4>==== Receipt ====</h4>"
-    if prod1.checked:
-      receipt += f"<p>League of Legends Funko pops  ₱{float(prod1.value):.2f}</p>"
-    if prod2.checked:
-      receipt += f"<p>Gelato  ₱{float(prod2.value):.2f}</p>"
-    if prod3.checked:
-      receipt += (
-          f"<p>Dark Souls 3 (Deluxe) ₱{float(prod3.value):.2f}</p>"
-      )
-    if prod4.checked:
-      receipt += (
-          f"<p>Tiramisu (per slice)  ₱{float(prod4.value):.2f}</p>"
-      )
-    if prod5.checked:
-      receipt += (
-          "<p>Jojo's Bizarre Adventure Part 7 (Vol)"
-          f"  ₱{float(prod5.value):.2f}</p>"
-      )
-
-    if subtotal == 0:
-      receipt += "<p>No items selected.</p>"
 
     receipt += f"""
         <hr>
@@ -76,8 +68,9 @@ def create_order(e):
         """
     document.getElementById("show").innerHTML = receipt
   except Exception as err:
-    print("Order error:", err)
-
+    document.getElementById("show").innerHTML = (
+        f"<p style='color:red;'>Error: {err}</p>"
+    )
 
 
 try:
